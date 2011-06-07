@@ -31,6 +31,6 @@ DistUtilsExtra.auto.setup(
 	long_description='SysPeek is a system monitor indicator that displays CPU usage, memory usage, swap usage, disk usage and network traffic.',
 	url='http://launchpad.net/syspeek',
 	data_files=[
-		('/usr/local/share/gnome/autostart', ['autostart/syspeek.desktop',]),
+		('/etc/xdg/autostart', ['autostart/syspeek.desktop',]),
 	],
 )
