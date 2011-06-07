@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Categories=GNOME;Utility;
+Name=SysPeek
+Comment=SysPeek System Monitor Indicator
+Exec=syspeek
+Icon=syspeek
+
