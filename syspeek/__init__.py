@@ -17,7 +17,7 @@
 
 NAME = 'syspeek'
 DISPLAY_NAME = 'SysPeek'
-VERSION = '0.1'
+VERSION = '0.2'
 LICENSE = 'GPL-3'
 COPYRIGHT = 'Copyright (C) 2011 Georg Schmidl'
 WEBSITE = 'http://launchpad.net/syspeek'

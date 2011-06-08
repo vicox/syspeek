@@ -23,7 +23,7 @@ import DistUtilsExtra.auto
 
 DistUtilsExtra.auto.setup(
 	name='syspeek',
-	version='0.1',
+	version='0.2',
 	license='GPL-3',
 	author='Georg Schmidl',
 	author_email='georg.schmidl@vicox.net',
