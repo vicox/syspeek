@@ -29,16 +29,16 @@ class SysPeekIndicator(appindicator.Indicator):
 	suppliers = {}
 	active_suppliers = []
 
-	LABEL_CPU = _('CPU') + ': %.1f%%'
-	LABEL_MEMORY = _('Memory') + ': %s ' + _('of') + ' %s'
-	LABEL_SWAP = _('Swap') + ': %s ' + _('of') + ' %s'
-	LABEL_DISK = _('Disk') + ': %s ' + _('of') + ' %s'
-	LABEL_RECEIVING = _('Receiving') + ': %s/s'
-	LABEL_SENDING = _('Sending') + ': %s/s'
+	LABEL_CPU = _('CPU') + ': {:.1f}%'
+	LABEL_MEMORY = _('Memory') + ': {} ' + _('of') + ' {}'
+	LABEL_SWAP = _('Swap') + ': {} ' + _('of') + ' {}'
+	LABEL_DISK = _('Disk') + ': {} ' + _('of') + ' {}'
+	LABEL_RECEIVING = _('Receiving') + ': {}/s'
+	LABEL_SENDING = _('Sending') + ': {}/s'
 
 	def __init__(self):
 		appindicator.Indicator.__init__(self, NAME, NAME + '-0',
-			appindicator.CATEGORY_APPLICATION_STATUS
+			appindicator.CATEGORY_HARDWARE
 		)
 		self.set_status((appindicator.STATUS_ACTIVE))
 
@@ -125,29 +125,29 @@ class SysPeekIndicator(appindicator.Indicator):
 	def update_cpu(self, percentage):
 		self.set_icon(NAME + '-' + str(int(percentage / 10) * 10))
 		self.menu_items['cpu'].set_label(
-			self.LABEL_CPU % percentage
+			self.LABEL_CPU.format(percentage)
 		)
 
 	def update_memswap(self, mem_used, mem_total, swap_used, swap_total):
 		self.menu_items['memory'].set_label(
-			self.LABEL_MEMORY % (_h(mem_used), _h(mem_total))
+			self.LABEL_MEMORY.format(_h(mem_used), _h(mem_total))
 		)
 		self.menu_items['swap'].set_label(
-			self.LABEL_SWAP % (_h(swap_used), _h(swap_total))
+			self.LABEL_SWAP.format(_h(swap_used), _h(swap_total))
 		)
 
 
 	def update_disk(self, used, total):
 		self.menu_items['disk'].set_label(
-			self.LABEL_DISK % (_h(used), _h(total))
+			self.LABEL_DISK.format(_h(used), _h(total))
 		)
 
 	def update_network(self, receiving, sending):
 		self.menu_items['receiving'].set_label(
-			self.LABEL_RECEIVING % _h(receiving)
+			self.LABEL_RECEIVING.format(_h(receiving))
 		)
 		self.menu_items['sending'].set_label(
-			self.LABEL_SENDING % _h(sending)
+			self.LABEL_SENDING.format(_h(sending))
 		)
 
 	def system_monitor(self, widget):

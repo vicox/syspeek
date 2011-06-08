@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import gobject
 import os
 import threading
 import time
@@ -68,7 +69,7 @@ class CpuSupplier(Supplier):
 		if delta_total > 0 and delta_busy > 0:
 			percentage = (float(delta_busy) / delta_total) * 100
 
-		self.display.update_cpu(percentage)
+		gobject.idle_add(self.display.update_cpu, percentage)
 
 		self.last_total = total
 		self.last_busy = busy
@@ -89,7 +90,7 @@ class MemSwapSupplier(Supplier):
 		mem_used = meminfo['MemTotal'] - meminfo['MemFree'] - meminfo['Buffers'] - meminfo['Cached']
 		swap_used = meminfo['SwapTotal'] - meminfo['SwapFree']
 		
-		self.display.update_memswap(mem_used, meminfo['MemTotal'], swap_used, meminfo['SwapTotal'])
+		gobject.idle_add(self.display.update_memswap, mem_used, meminfo['MemTotal'], swap_used, meminfo['SwapTotal'])
 
 class NetworkSupplier(Supplier):
 	last_receive = 0
@@ -120,7 +121,7 @@ class NetworkSupplier(Supplier):
 		delta_receive = receive - self.last_receive
 		delta_transmit = transmit - self.last_transmit
 
-		self.display.update_network(delta_receive, delta_transmit)
+		gobject.idle_add(self.display.update_network, delta_receive, delta_transmit)
 
 		self.last_receive = receive
 		self.last_transmit = transmit
@@ -141,5 +142,5 @@ class DiskSupplier(Supplier):
 		stat = os.statvfs('/home')
 		total = stat.f_bsize * stat.f_blocks
 		used = total - (stat.f_bsize * stat.f_bfree)
-		self.display.update_disk(used, total)
+		gobject.idle_add(self.display.update_disk, used, total)
 
