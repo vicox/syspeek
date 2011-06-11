@@ -56,6 +56,15 @@ class SysPeekIndicator(appindicator.Indicator):
 
 	def build_menu(self):
 		menu = gtk.Menu()
+
+		system_monitor = gtk.MenuItem(_('System Monitor') + '...')
+		system_monitor.connect('activate', self.system_monitor)
+		system_monitor.show()
+		menu.append(system_monitor)
+
+		system_monitor_separator = gtk.SeparatorMenuItem()
+		menu.append(system_monitor_separator)
+		system_monitor_separator.show()
 		
 		self.menu_items['cpu'] = gtk.MenuItem()
 		menu.append(self.menu_items['cpu'])
@@ -86,11 +95,6 @@ class SysPeekIndicator(appindicator.Indicator):
 
 		self.menu_items['separator_network'] = gtk.SeparatorMenuItem()
 		menu.append(self.menu_items['separator_network'])
-
-		system_monitor = gtk.MenuItem(_('System Monitor'))
-		system_monitor.connect('activate', self.system_monitor)
-		system_monitor.show()
-		menu.append(system_monitor)
 
 		about = gtk.MenuItem(_('About'))
 		about.connect('activate', self.about)
