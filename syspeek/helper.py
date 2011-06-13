@@ -19,6 +19,6 @@ def human_readable(bytes):
 	for x in ['bytes','KiB','MiB','GiB','TiB', 'PiB' 'EiB', 'ZiB', 'YiB']:
 		if bytes < 1024.0:
 			if x == 'bytes':
-				return '{} {}'.format(bytes, x)
-			return '{:.1f} {}'.format(bytes, x)
+				return '{0} {1}'.format(bytes, x)
+			return '{0:.1f} {1}'.format(bytes, x)
 		bytes = bytes / 1024.0

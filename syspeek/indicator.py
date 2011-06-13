@@ -29,12 +29,12 @@ class SysPeekIndicator(appindicator.Indicator):
 	suppliers = {}
 	active_suppliers = []
 
-	LABEL_CPU = _('CPU') + ': {:.1f}%'
-	LABEL_MEMORY = _('Memory') + ': {} ' + _('of') + ' {}'
-	LABEL_SWAP = _('Swap') + ': {} ' + _('of') + ' {}'
-	LABEL_DISK = _('Disk') + ': {} ' + _('of') + ' {}'
-	LABEL_RECEIVING = _('Receiving') + ': {}/s'
-	LABEL_SENDING = _('Sending') + ': {}/s'
+	LABEL_CPU = _('CPU') + ': {0:.1f}%'
+	LABEL_MEMORY = _('Memory') + ': {0} ' + _('of') + ' {1}'
+	LABEL_SWAP = _('Swap') + ': {0} ' + _('of') + ' {1}'
+	LABEL_DISK = _('Disk') + ': {0} ' + _('of') + ' {1}'
+	LABEL_RECEIVING = _('Receiving') + ': {0}/s'
+	LABEL_SENDING = _('Sending') + ': {0}/s'
 
 	def __init__(self):
 		appindicator.Indicator.__init__(self, NAME, NAME + '-0',
