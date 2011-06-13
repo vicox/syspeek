@@ -19,6 +19,8 @@ import gtk
 import appindicator
 import os
 from gettext import gettext as _
+from UserDict import UserDict
+import json
 
 from syspeek import *
 from syspeek.supplier import *
@@ -30,11 +32,15 @@ class SysPeekIndicator(appindicator.Indicator):
 	active_suppliers = []
 
 	LABEL_CPU = _('CPU') + ': {0:.1f}%'
+	LABEL_CORE = _('CPU') + '{0}: {1:.1f}%'
+	LABEL_CORES = _('CPU') + '{0}: {1:.1f}%' + '    ' + _('CPU') + '{2}: {3:.1f}%'
 	LABEL_MEMORY = _('Memory') + ': {0} ' + _('of') + ' {1}'
 	LABEL_SWAP = _('Swap') + ': {0} ' + _('of') + ' {1}'
-	LABEL_DISK = _('Disk') + ': {0} ' + _('of') + ' {1}'
+	LABEL_DISK = '{0}: {1} ' + _('of') + ' {2}'
 	LABEL_RECEIVING = _('Receiving') + ': {0}/s'
 	LABEL_SENDING = _('Sending') + ': {0}/s'
+	LABEL_RECEIVED = _('Total Received') + ': {0}'
+	LABEL_SENT = _('Total Sent') + ': {0}'
 
 	def __init__(self):
 		appindicator.Indicator.__init__(self, NAME, NAME + '-0',
@@ -50,17 +56,48 @@ class SysPeekIndicator(appindicator.Indicator):
 
 		self.set_status((appindicator.STATUS_ACTIVE))
 
+		self.preferences = Preferences()
+		self.preferences.load()
+
 		self.suppliers['cpu'] = CpuSupplier(self)
-		self.suppliers['memswap'] = MemSwapSupplier(self, 2)
-		self.suppliers['disk'] = DiskSupplier(self, 2)
+		self.suppliers['memswap'] = MemSwapSupplier(self)
+		self.suppliers['disk'] = DiskSupplier(self)
 		self.suppliers['network'] = NetworkSupplier(self)
 
-		self.active_suppliers = ['cpu','memswap', 'disk', 'network']
-
 		self.build_menu()
+		self.start_suppliers()
 
-		for name in self.active_suppliers:
-			self.suppliers[name].start()
+	def start_suppliers(self):
+		if self.preferences['display_cpu_average']:
+				self.suppliers['cpu'].supply_average = True
+
+		if self.preferences['display_cpu_cores']:
+				self.suppliers['cpu'].supply_cores = True
+
+		if self.preferences['display_cpu_average'] or self.preferences['display_cpu_cores']:
+			self.suppliers['cpu'].interval = self.preferences['refresh_rate_cpu']
+			self.suppliers['cpu'].start()
+		else:
+			self.suppliers['cpu'].stop()
+		
+		if self.preferences['display_memory'] or self.preferences['display_swap']:
+			self.suppliers['memswap'].interval = self.preferences['refresh_rate_memswap']
+			self.suppliers['memswap'].start()
+		else:
+			self.suppliers['memswap'].stop()
+
+		if self.preferences['display_disk'] and len(self.preferences['disks']) > 0:
+			self.suppliers['disk'].interval = self.preferences['refresh_rate_disk']
+			self.suppliers['disk'].directories = self.preferences['disks']
+			self.suppliers['disk'].start()
+		else:
+			self.suppliers['disk'].stop()
+
+		if self.preferences['display_network_speed'] or self.preferences['display_network_total']:
+			self.suppliers['network'].interval = self.preferences['refresh_rate_network']
+			self.suppliers['network'].start()
+		else:
+			self.suppliers['network'].stop()
 
 	def build_menu(self):
 		menu = gtk.Menu()
@@ -74,35 +111,76 @@ class SysPeekIndicator(appindicator.Indicator):
 		menu.append(system_monitor_separator)
 		system_monitor_separator.show()
 		
-		self.menu_items['cpu'] = gtk.MenuItem()
-		menu.append(self.menu_items['cpu'])
+		if self.preferences['display_cpu_average']:
+			self.menu_items['cpu'] = gtk.MenuItem()
+			menu.append(self.menu_items['cpu'])
+			self.menu_items['cpu'].show()
 
-		self.menu_items['separator_cpu'] = gtk.SeparatorMenuItem()
-		menu.append(self.menu_items['separator_cpu'])
+		if self.preferences['display_cpu_cores']:
+			cpu_count = self.suppliers['cpu'].get_cpu_count()
+			self.menu_items['cores'] = {}
+			for x in range(cpu_count / 2):
+				self.menu_items['cores'][x] = gtk.MenuItem()
+				menu.append(self.menu_items['cores'][x])
+				self.menu_items['cores'][x].show()
+			if cpu_count % 2 == 1:
+				self.menu_items['cores'][cpu_count-1] = gtk.MenuItem()
+				menu.append(self.menu_items['cores'][cpu_count-1])
+				self.menu_items['cores'][cpu_count-1].show()
 
-		self.menu_items['memory'] = gtk.MenuItem()
-		menu.append(self.menu_items['memory'])
+		if self.preferences['display_cpu_average'] or self.preferences['display_cpu_cores']:
+			self.menu_items['separator_cpu'] = gtk.SeparatorMenuItem()
+			menu.append(self.menu_items['separator_cpu'])
+			self.menu_items['separator_cpu'].show()
 
-		self.menu_items['swap'] = gtk.MenuItem()
-		menu.append(self.menu_items['swap'])
+		if self.preferences['display_memory']:
+			self.menu_items['memory'] = gtk.MenuItem()
+			menu.append(self.menu_items['memory'])
+			self.menu_items['memory'].show()
 
-		self.menu_items['separator_memswap'] = gtk.SeparatorMenuItem()
-		menu.append(self.menu_items['separator_memswap'])
+		if self.preferences['display_swap']:
+			self.menu_items['swap'] = gtk.MenuItem()
+			menu.append(self.menu_items['swap'])
+			self.menu_items['swap'].show()
 
-		self.menu_items['disk'] = gtk.MenuItem()
-		menu.append(self.menu_items['disk'])
+		if self.preferences['display_memory'] or self.preferences['display_swap']:
+			self.menu_items['separator_memswap'] = gtk.SeparatorMenuItem()
+			menu.append(self.menu_items['separator_memswap'])
+			self.menu_items['separator_memswap'].show()
 
-		self.menu_items['separator_disk'] = gtk.SeparatorMenuItem()
-		menu.append(self.menu_items['separator_disk'])
+		if self.preferences['display_disk'] and len(self.preferences['disks']) > 0:
+			self.menu_items['disks'] = {}
+			for key in self.preferences['disks']:
+				self.menu_items['disks'][key] = gtk.MenuItem()
+				menu.append(self.menu_items['disks'][key])
+				self.menu_items['disks'][key].show()
 
-		self.menu_items['receiving'] = gtk.MenuItem()
-		menu.append(self.menu_items['receiving'])
+			self.menu_items['separator_disk'] = gtk.SeparatorMenuItem()
+			menu.append(self.menu_items['separator_disk'])
+			self.menu_items['separator_disk'].show()
 
-		self.menu_items['sending'] = gtk.MenuItem()
-		menu.append(self.menu_items['sending'])
+		if self.preferences['display_network_speed']:
+			self.menu_items['receiving'] = gtk.MenuItem()
+			menu.append(self.menu_items['receiving'])
+			self.menu_items['receiving'].show()
 
-		self.menu_items['separator_network'] = gtk.SeparatorMenuItem()
-		menu.append(self.menu_items['separator_network'])
+			self.menu_items['sending'] = gtk.MenuItem()
+			menu.append(self.menu_items['sending'])
+			self.menu_items['sending'].show()
+
+		if self.preferences['display_network_total']:
+			self.menu_items['received'] = gtk.MenuItem()
+			menu.append(self.menu_items['received'])
+			self.menu_items['received'].show()
+
+			self.menu_items['sent'] = gtk.MenuItem()
+			menu.append(self.menu_items['sent'])
+			self.menu_items['sent'].show()
+
+		if self.preferences['display_network_speed'] or self.preferences['display_network_total']:
+			self.menu_items['separator_network'] = gtk.SeparatorMenuItem()
+			menu.append(self.menu_items['separator_network'])
+			self.menu_items['separator_network'].show()
 
 		about = gtk.MenuItem(_('About'))
 		about.connect('activate', self.about)
@@ -114,53 +192,62 @@ class SysPeekIndicator(appindicator.Indicator):
 		quit.show()
 		menu.append(quit)
 
-		if 'cpu' in self.active_suppliers:
-			self.menu_items['cpu'].show()
-			self.menu_items['separator_cpu'].show()
-
-		if 'memswap' in self.active_suppliers:
-			self.menu_items['memory'].show()
-			self.menu_items['swap'].show()
-			self.menu_items['separator_memswap'].show()
-
-		if 'disk' in self.active_suppliers:
-			self.menu_items['disk'].show()
-			self.menu_items['separator_disk'].show()
-
-		if 'network' in self.active_suppliers:
-			self.menu_items['receiving'].show()
-			self.menu_items['sending'].show()
-			self.menu_items['separator_network'].show()
-			
 		self.set_menu(menu)
 
 	def update_cpu(self, percentage):
 		self.set_icon(NAME + '-' + str(int(percentage / 10) * 10))
-		self.menu_items['cpu'].set_label(
-			self.LABEL_CPU.format(percentage)
-		)
+		if self.preferences['display_cpu_average']:
+			self.menu_items['cpu'].set_label(
+				self.LABEL_CPU.format(percentage)
+			)
+
+	def update_cpu_cores(self, percentages):
+		if self.preferences['display_cpu_cores']:
+			for x in range(len(percentages) / 2):
+				self.menu_items['cores'][x].set_label(
+					self.LABEL_CORES.format(x*2+1, percentages[x*2], x*2+2, percentages[x*2+1])
+				)
+			if(len(percentages) % 2 == 1):
+				self.menu_items['cores'][len(percentages)-1].set_label(
+					self.LABEL_CORE.format(len(percentages), percentages[len(percentages)-1])
+				)
 
 	def update_memswap(self, mem_used, mem_total, swap_used, swap_total):
-		self.menu_items['memory'].set_label(
-			self.LABEL_MEMORY.format(_h(mem_used), _h(mem_total))
-		)
-		self.menu_items['swap'].set_label(
-			self.LABEL_SWAP.format(_h(swap_used), _h(swap_total))
-		)
+		if self.preferences['display_memory']:
+			self.menu_items['memory'].set_label(
+				self.LABEL_MEMORY.format(_h(mem_used), _h(mem_total))
+			)
+		if self.preferences['display_swap']:
+			self.menu_items['swap'].set_label(
+				self.LABEL_SWAP.format(_h(swap_used), _h(swap_total))
+			)
 
 
-	def update_disk(self, used, total):
-		self.menu_items['disk'].set_label(
-			self.LABEL_DISK.format(_h(used), _h(total))
-		)
+	def update_disk(self, disks):
+		if self.preferences['display_disk']:
+			for key in disks:
+				self.menu_items['disks'][key].set_label(
+					self.LABEL_DISK.format(self.preferences['disks'][key],
+						_h(disks[key]['used']), _h(disks[key]['total'])
+					)
+				)
 
-	def update_network(self, receiving, sending):
-		self.menu_items['receiving'].set_label(
-			self.LABEL_RECEIVING.format(_h(receiving))
-		)
-		self.menu_items['sending'].set_label(
-			self.LABEL_SENDING.format(_h(sending))
-		)
+	def update_network(self, receiving, sending, received, sent):
+		if self.preferences['display_network_speed']:
+			self.menu_items['receiving'].set_label(
+				self.LABEL_RECEIVING.format(_h(receiving))
+			)
+			self.menu_items['sending'].set_label(
+				self.LABEL_SENDING.format(_h(sending))
+			)
+
+		if self.preferences['display_network_total']:
+			self.menu_items['received'].set_label(
+				self.LABEL_RECEIVED.format(_h(received))
+			)
+			self.menu_items['sent'].set_label(
+				self.LABEL_SENT.format(_h(sent))
+			)
 
 	def system_monitor(self, widget):
 		os.spawnlp(os.P_NOWAIT, 'gnome-system-monitor', 'gnome-system-monitor')
@@ -184,4 +271,75 @@ class SysPeekIndicator(appindicator.Indicator):
 
 	def quit(self, widget):
 		gtk.main_quit()
+
+class Preferences(UserDict):
+	FILENAME = os.path.join(os.getenv('HOME'), '.' + NAME, 'preferences.json')
+	DEFAULT_PREFERENCES = {
+		'version': 1,
+		'refresh_rate_cpu': 1.0,
+		'refresh_rate_memswap': 2.0,
+		'refresh_rate_disk': 2.0,
+		'refresh_rate_network': 1.0,
+		'display_cpu_average': True,
+		'display_cpu_cores': False,
+		'display_memory': True,
+		'display_swap': True,
+		'display_network_speed': True,
+		'display_network_total': False,
+		'display_disk': True,
+		'disks': {
+			'/home': _('Disk'),
+		},
+	}
+
+	def save(self):
+		if not os.path.exists(os.path.dirname(self.FILENAME)):
+			os.makedirs(os.path.dirname(self.FILENAME))
+
+		f = open(self.FILENAME, 'w')
+		f.write(json.dumps(self.data, indent=4))
+		f.flush()
+		f.close()
+
+	def load(self):
+		if not os.path.exists(self.FILENAME):
+			self.data = self.DEFAULT_PREFERENCES
+			self.save()
+			return
+
+		try:
+			f = open(self.FILENAME, 'r')
+			self.data = json.loads(f.read())
+			f.close()
+		except:
+			print "ERROR: Could not read preferences file. Loading default values."
+			self.data = self.DEFAULT_PREFERENCES
+			self.save()
+			return
+
+		self.check()
+
+	def check(self):
+		update = False
+
+		for key in self.DEFAULT_PREFERENCES:
+			if key not in self.data:
+				update = True
+				self.data[key] = self.DEFAULT_PREFERENCES[key]
+
+		if self.data['version'] < self.DEFAULT_PREFERENCES['version']:
+			# maybe there is the need to do more here in the future
+			update = True
+			self.data['version'] = self.DEFAULT_PREFERENCES['version']
+
+		for key in self.data:
+			if ((type(self.data[key]) is not type(self.DEFAULT_PREFERENCES[key])) or 
+					(key.startswith('refresh_rate_') and self.data[key] <= 0.0)):
+				update = True
+				print "ERROR: Invalid value %s for key %s. Setting to default value %s" % \
+					(self.data[key], key, self.DEFAULT_PREFERENCES[key])
+				self.data[key] = self.DEFAULT_PREFERENCES[key]
+		
+		if update:
+			self.save()
 

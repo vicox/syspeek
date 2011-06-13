@@ -47,32 +47,68 @@ class Supplier(threading.Thread):
 	def supply(self): pass
 
 class CpuSupplier(Supplier):
-	last_total = 0
-	last_busy = 0
+	last_total = {}
+	last_busy = {}
+
+	supply_average = False
+	supply_cores = False
 
 	IDLE = 3
 
-	def supply(self):
+	def get_cpu_count(self):
 		f = open('/proc/stat', 'r')
-		line = f.readline()
+		stat = f.readlines()
 		f.close()
 
-		stats= [int(x) for x in line.split()[1:8]]
+		count = -1
+		for line in stat:
+			if line.startswith('cpu'):
+				count = count + 1
+			else:
+				break
+		return count
 
+	def calculate_percentage(self, stats, core):
 		total = sum(stats)
 		busy = total - stats[self.IDLE]
 
-		delta_total = total - self.last_total
-		delta_busy = busy - self.last_busy
+		if core not in self.last_total:
+			self.last_total[core] = 0
+		if core not in self.last_busy:
+			self.last_busy[core] = 0
+
+		delta_total = total - self.last_total[core]
+		delta_busy = busy - self.last_busy[core]
 
 		percentage = 0
 		if delta_total > 0 and delta_busy > 0:
 			percentage = (float(delta_busy) / delta_total) * 100
 
-		gobject.idle_add(self.display.update_cpu, percentage)
+		self.last_total[core] = total
+		self.last_busy[core] = busy
 
-		self.last_total = total
-		self.last_busy = busy
+		return percentage
+
+	def supply(self):
+		f = open('/proc/stat', 'r')
+		stat = f.readlines()
+		f.close()
+
+		percentages = []
+		for core in range(len(stat)):
+			if stat[core].startswith('cpu'):
+				stats= [int(x) for x in stat[core].split()[1:8]]
+				percentages.append(self.calculate_percentage(stats, core))
+				if core == 0 and not self.supply_cores:
+					break
+			else:
+				break
+
+		if self.supply_average:
+			gobject.idle_add(self.display.update_cpu, percentages[0])
+
+		if self.supply_cores:
+			gobject.idle_add(self.display.update_cpu_cores, percentages[1:])
 
 class MemSwapSupplier(Supplier):
 	def supply(self):
@@ -121,7 +157,7 @@ class NetworkSupplier(Supplier):
 		delta_receive = receive - self.last_receive
 		delta_transmit = transmit - self.last_transmit
 
-		gobject.idle_add(self.display.update_network, delta_receive, delta_transmit)
+		gobject.idle_add(self.display.update_network, delta_receive, delta_transmit, receive, transmit)
 
 		self.last_receive = receive
 		self.last_transmit = transmit
@@ -138,9 +174,18 @@ class NetworkSupplier(Supplier):
 				return row[self.ROUTE_INTERFACE]
 
 class DiskSupplier(Supplier):
+	directories = []
+
 	def supply(self):
-		stat = os.statvfs('/home')
-		total = stat.f_bsize * stat.f_blocks
-		used = total - (stat.f_bsize * stat.f_bfree)
-		gobject.idle_add(self.display.update_disk, used, total)
+		values = {}
+		for directory in self.directories:
+			try:
+				stat = os.statvfs(directory)
+				values[directory] = {}
+				values[directory]['total'] = stat.f_bsize * stat.f_blocks
+				values[directory]['used'] = values[directory]['total'] - (stat.f_bsize * stat.f_bfree)
+			except:
+				print "ERROR: Could not get data for " + directory
+
+		gobject.idle_add(self.display.update_disk, values)
 
