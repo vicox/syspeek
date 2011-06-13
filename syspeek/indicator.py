@@ -21,6 +21,7 @@ import os
 from gettext import gettext as _
 from UserDict import UserDict
 import json
+import pkg_resources
 
 from syspeek import *
 from syspeek.supplier import *
@@ -182,6 +183,11 @@ class SysPeekIndicator(appindicator.Indicator):
 			menu.append(self.menu_items['separator_network'])
 			self.menu_items['separator_network'].show()
 
+		preferences_menu_item = gtk.MenuItem(_('Preferences'))
+		preferences_menu_item.connect('activate', self.preferences_dialog)
+		preferences_menu_item.show()
+		menu.append(preferences_menu_item)
+
 		about = gtk.MenuItem(_('About'))
 		about.connect('activate', self.about)
 		about.show()
@@ -252,6 +258,13 @@ class SysPeekIndicator(appindicator.Indicator):
 	def system_monitor(self, widget):
 		os.spawnlp(os.P_NOWAIT, 'gnome-system-monitor', 'gnome-system-monitor')
 		os.wait3(os.WNOHANG)
+
+	def preferences_dialog(self, widget):
+		builder = gtk.Builder()
+		builder.add_from_file(pkg_resources.resource_filename('syspeek.ui','PreferencesDialog.ui'))
+		preferences = builder.get_object('dialogPreferences')
+		preferences.set_title(DISPLAY_NAME + ' ' + _('Preferences'))
+		preferences.show()
 
 	def about(self, widget):
 		self.aboutdialog = gtk.AboutDialog()
