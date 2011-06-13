@@ -16,14 +16,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import gtk
-from syspeek.indicator import *
+import sys
+import os
 
-if __name__ == '__main__':
-	gtk.gdk.threads_init()
-	gtk.gdk.threads_enter()
+ROOT_DIRECTORY = os.path.abspath(
+    os.path.dirname(os.path.dirname(os.path.realpath(sys.argv[0])))
+)
 
-	syspeek = SysPeekIndicator()
+if (os.path.exists(os.path.join(ROOT_DIRECTORY, 'syspeek'))
+		and ROOT_DIRECTORY not in sys.path):
+	sys.path.insert(0, ROOT_DIRECTORY)
 
-	gtk.main()
-	gtk.gdk.threads_leave()
+import syspeek
+syspeek.main()
+

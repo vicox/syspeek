@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 #
-#    SysPeek is a system monitor indicator that displays system information
-#    like CPU usage, memory usage, swap usage, etc.
-#
 #    Copyright (C) 2011  Georg Schmidl <georg.schmidl@vicox.net>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,7 +16,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import os
+import sys
+import shutil
 import DistUtilsExtra.auto
+
+class Install(DistUtilsExtra.auto.install_auto):
+	def run(self):
+		shutil.copy(os.path.join('data', 'syspeek.desktop.in'), 'syspeek.desktop')
+		DistUtilsExtra.auto.install_auto.run(self)
+		os.remove('syspeek.desktop')
 
 DistUtilsExtra.auto.setup(
 	name='syspeek',
@@ -31,6 +37,7 @@ DistUtilsExtra.auto.setup(
 	long_description='SysPeek is a system monitor indicator that displays CPU usage, memory usage, swap usage, disk usage and network traffic.',
 	url='http://launchpad.net/syspeek',
 	data_files=[
-		('/etc/xdg/autostart', ['autostart/syspeek.desktop',]),
+		('/etc/xdg/autostart', ['syspeek.desktop',]),
 	],
+	cmdclass={'install': Install},
 )

@@ -40,6 +40,14 @@ class SysPeekIndicator(appindicator.Indicator):
 		appindicator.Indicator.__init__(self, NAME, NAME + '-0',
 			appindicator.CATEGORY_HARDWARE
 		)
+
+		# in case app is running from local folder
+		icon_path = os.path.abspath(os.path.join(
+			os.path.dirname(__file__), '../data/icons/22x22/status')
+		)
+		if os.path.exists(icon_path):
+			self.set_icon_theme_path(icon_path)
+
 		self.set_status((appindicator.STATUS_ACTIVE))
 
 		self.suppliers['cpu'] = CpuSupplier(self)
