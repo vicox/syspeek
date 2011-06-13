@@ -120,14 +120,10 @@ class SysPeekIndicator(appindicator.Indicator):
 		if self.preferences['display_cpu_cores']:
 			cpu_count = self.suppliers['cpu'].get_cpu_count()
 			self.menu_items['cores'] = {}
-			for x in range(cpu_count / 2):
+			for x in range(cpu_count / 2 + cpu_count % 2):
 				self.menu_items['cores'][x] = gtk.MenuItem()
 				menu.append(self.menu_items['cores'][x])
 				self.menu_items['cores'][x].show()
-			if cpu_count % 2 == 1:
-				self.menu_items['cores'][cpu_count-1] = gtk.MenuItem()
-				menu.append(self.menu_items['cores'][cpu_count-1])
-				self.menu_items['cores'][cpu_count-1].show()
 
 		if self.preferences['display_cpu_average'] or self.preferences['display_cpu_cores']:
 			self.menu_items['separator_cpu'] = gtk.SeparatorMenuItem()
@@ -214,8 +210,8 @@ class SysPeekIndicator(appindicator.Indicator):
 					self.LABEL_CORES.format(x*2+1, percentages[x*2], x*2+2, percentages[x*2+1])
 				)
 			if(len(percentages) % 2 == 1):
-				self.menu_items['cores'][len(percentages)-1].set_label(
-					self.LABEL_CORE.format(len(percentages), percentages[len(percentages)-1])
+				self.menu_items['cores'][len(percentages)/2].set_label(
+					self.LABEL_CORE.format(len(percentages), percentages[-1])
 				)
 
 	def update_memswap(self, mem_used, mem_total, swap_used, swap_total):
