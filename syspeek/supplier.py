@@ -126,7 +126,12 @@ class MemSwapSupplier(Supplier):
 		mem_used = meminfo['MemTotal'] - meminfo['MemFree'] - meminfo['Buffers'] - meminfo['Cached']
 		swap_used = meminfo['SwapTotal'] - meminfo['SwapFree']
 		
-		gobject.idle_add(self.display.update_memswap, mem_used, meminfo['MemTotal'], swap_used, meminfo['SwapTotal'])
+		gobject.idle_add(self.display.update_memswap,
+			mem_used,
+			meminfo['MemTotal'],
+			swap_used,
+			meminfo['SwapTotal']
+		)
 
 class NetworkSupplier(Supplier):
 	last_receive = 0
@@ -157,7 +162,12 @@ class NetworkSupplier(Supplier):
 		delta_receive = receive - self.last_receive
 		delta_transmit = transmit - self.last_transmit
 
-		gobject.idle_add(self.display.update_network, delta_receive, delta_transmit, receive, transmit)
+		gobject.idle_add(self.display.update_network,
+			int(delta_receive / self.interval),
+			int(delta_transmit / self.interval),
+			receive,
+			transmit
+		)
 
 		self.last_receive = receive
 		self.last_transmit = transmit
@@ -183,7 +193,9 @@ class DiskSupplier(Supplier):
 				stat = os.statvfs(directory)
 				values[directory] = {}
 				values[directory]['total'] = stat.f_bsize * stat.f_blocks
-				values[directory]['used'] = values[directory]['total'] - (stat.f_bsize * stat.f_bfree)
+				values[directory]['used'] = (
+					values[directory]['total'] - (stat.f_bsize * stat.f_bfree)
+				)
 			except:
 				print "ERROR: Could not get data for " + directory
 
