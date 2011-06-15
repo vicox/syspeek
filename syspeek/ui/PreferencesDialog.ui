@@ -2,7 +2,32 @@
 <interface>
   <requires lib="gtk+" version="2.24"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkDialog" id="dialogPreferences">
+  <object class="GtkAdjustment" id="adjustment_update_interval_cpu">
+    <property name="lower">0.25</property>
+    <property name="upper">3600</property>
+    <property name="step_increment">0.25</property>
+    <property name="page_increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment_update_interval_disk">
+    <property name="lower">0.25</property>
+    <property name="upper">3600</property>
+    <property name="step_increment">0.25</property>
+    <property name="page_increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment_update_interval_memswap">
+    <property name="lower">0.25</property>
+    <property name="upper">3600</property>
+    <property name="step_increment">0.25</property>
+    <property name="page_increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment_update_interval_network">
+    <property name="lower">0.25</property>
+    <property name="upper">3600</property>
+    <property name="step_increment">0.25</property>
+    <property name="page_increment">1</property>
+  </object>
+  <object class="GtkListStore" id="liststore_disk"/>
+  <object class="GtkDialog" id="preferences_dialog">
     <property name="can_focus">False</property>
     <property name="border_width">12</property>
     <property name="window_position">mouse</property>
@@ -18,13 +43,30 @@
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
-              <object class="GtkButton" id="button1">
+              <object class="GtkButton" id="button_ok">
+                <property name="label">gtk-ok</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_button_ok_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">-1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_cancel">
                 <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_button_cancel_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -33,13 +75,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button2">
-                <property name="label">gtk-ok</property>
+              <object class="GtkButton" id="button_apply">
+                <property name="label">gtk-apply</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_button_apply_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -74,7 +117,7 @@
                       <object class="GtkLabel" id="label5">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Refresh every</property>
+                        <property name="label" translatable="yes">Update every</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -83,7 +126,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="spinbuttonRefreshRateCpu">
+                      <object class="GtkSpinButton" id="update_interval_cpu">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">•</property>
@@ -91,7 +134,9 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
-                        <property name="digits">1</property>
+                        <property name="adjustment">adjustment_update_interval_cpu</property>
+                        <property name="digits">2</property>
+                        <property name="numeric">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -119,7 +164,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbuttonDisplayCpuAverage">
+                  <object class="GtkCheckButton" id="display_cpu_average">
                     <property name="label" translatable="yes">Display average CPU load</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -134,7 +179,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbuttonDisplayCpuCores">
+                  <object class="GtkCheckButton" id="display_cpu_cores">
                     <property name="label" translatable="yes">Display CPU load for each core</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -175,7 +220,7 @@
                       <object class="GtkLabel" id="label7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Refresh every</property>
+                        <property name="label" translatable="yes">Update every</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -184,7 +229,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="spinbutton2">
+                      <object class="GtkSpinButton" id="update_interval_memswap">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">•</property>
@@ -193,7 +238,9 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
-                        <property name="digits">1</property>
+                        <property name="adjustment">adjustment_update_interval_memswap</property>
+                        <property name="digits">2</property>
+                        <property name="numeric">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -221,7 +268,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbutton3">
+                  <object class="GtkCheckButton" id="display_memory">
                     <property name="label" translatable="yes">Display memory usage</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -236,7 +283,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbutton4">
+                  <object class="GtkCheckButton" id="display_swap">
                     <property name="label" translatable="yes">Display Swap usage</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -281,7 +328,7 @@
                       <object class="GtkLabel" id="label9">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Refresh every</property>
+                        <property name="label" translatable="yes">Update every</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -290,7 +337,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="spinbutton3">
+                      <object class="GtkSpinButton" id="update_interval_disk">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">•</property>
@@ -299,7 +346,9 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
-                        <property name="digits">1</property>
+                        <property name="adjustment">adjustment_update_interval_disk</property>
+                        <property name="digits">2</property>
+                        <property name="numeric">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -327,8 +376,8 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbutton1">
-                    <property name="label" translatable="yes">Display disks</property>
+                  <object class="GtkCheckButton" id="display_disk">
+                    <property name="label" translatable="yes">Display disk</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -365,7 +414,7 @@
                       <object class="GtkTreeView" id="treeview1">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="model">liststoreDisks</property>
+                        <property name="model">liststore_disk</property>
                       </object>
                     </child>
                   </object>
@@ -406,7 +455,7 @@
                       <object class="GtkLabel" id="label12">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Refresh every</property>
+                        <property name="label" translatable="yes">Update every</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -415,7 +464,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="spinbutton4">
+                      <object class="GtkSpinButton" id="update_interval_network">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">•</property>
@@ -424,7 +473,9 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
-                        <property name="digits">1</property>
+                        <property name="adjustment">adjustment_update_interval_network</property>
+                        <property name="digits">2</property>
+                        <property name="numeric">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -452,7 +503,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbutton5">
+                  <object class="GtkCheckButton" id="display_network_speed">
                     <property name="label" translatable="yes">Display network speed</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -467,7 +518,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbutton6">
+                  <object class="GtkCheckButton" id="display_network_total">
                     <property name="label" translatable="yes">Display total network traffic</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -507,9 +558,9 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button1</action-widget>
-      <action-widget response="0">button2</action-widget>
+      <action-widget response="0">button_cancel</action-widget>
+      <action-widget response="0">button_apply</action-widget>
+      <action-widget response="0">button_ok</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkListStore" id="liststoreDisks"/>
 </interface>

@@ -29,11 +29,12 @@ class Supplier(threading.Thread):
 		threading.Thread.__init__(self)
 		self.display = display
 		self.interval = interval
+		self._stop = threading.Event()
 		self.setDaemon(True)
 
 	def run(self):
 		self.running = True
-		while self.running:
+		while not self.stopped():
 			try:
 				self.supply()
 			except:
@@ -41,7 +42,10 @@ class Supplier(threading.Thread):
 			time.sleep(self.interval)
 
 	def stop(self):
-		self.running = False
+		self._stop.set()
+
+	def stopped(self):
+		return self._stop.isSet()
 
 	@abstractmethod
 	def supply(self): pass

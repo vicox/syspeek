@@ -16,6 +16,7 @@
 #
 
 import gtk
+import gobject
 import appindicator
 import os
 from gettext import gettext as _
@@ -42,6 +43,8 @@ class SysPeekIndicator(appindicator.Indicator):
 	LABEL_SENDING = _('Sending') + ': {0}/s'
 	LABEL_RECEIVED = _('Total Received') + ': {0}'
 	LABEL_SENT = _('Total Sent') + ': {0}'
+
+	LABEL_WAITING = _('Waiting for data') + '...'
 
 	def __init__(self):
 		appindicator.Indicator.__init__(self, NAME, NAME + '-0',
@@ -76,27 +79,31 @@ class SysPeekIndicator(appindicator.Indicator):
 				self.suppliers['cpu'].supply_cores = True
 
 		if self.preferences['display_cpu_average'] or self.preferences['display_cpu_cores']:
-			self.suppliers['cpu'].interval = self.preferences['refresh_rate_cpu']
-			self.suppliers['cpu'].start()
+			self.suppliers['cpu'].interval = self.preferences['update_interval_cpu']
+			if not self.suppliers['cpu'].is_alive():
+				self.suppliers['cpu'].start()
 		else:
 			self.suppliers['cpu'].stop()
 		
 		if self.preferences['display_memory'] or self.preferences['display_swap']:
-			self.suppliers['memswap'].interval = self.preferences['refresh_rate_memswap']
-			self.suppliers['memswap'].start()
+			self.suppliers['memswap'].interval = self.preferences['update_interval_memswap']
+			if not self.suppliers['memswap'].is_alive():
+				self.suppliers['memswap'].start()
 		else:
 			self.suppliers['memswap'].stop()
 
 		if self.preferences['display_disk'] and len(self.preferences['disks']) > 0:
-			self.suppliers['disk'].interval = self.preferences['refresh_rate_disk']
+			self.suppliers['disk'].interval = self.preferences['update_interval_disk']
 			self.suppliers['disk'].directories = self.preferences['disks']
-			self.suppliers['disk'].start()
+			if not self.suppliers['disk'].is_alive():
+				self.suppliers['disk'].start()
 		else:
 			self.suppliers['disk'].stop()
 
 		if self.preferences['display_network_speed'] or self.preferences['display_network_total']:
-			self.suppliers['network'].interval = self.preferences['refresh_rate_network']
-			self.suppliers['network'].start()
+			self.suppliers['network'].interval = self.preferences['update_interval_network']
+			if not self.suppliers['network'].is_alive():
+				self.suppliers['network'].start()
 		else:
 			self.suppliers['network'].stop()
 
@@ -113,7 +120,7 @@ class SysPeekIndicator(appindicator.Indicator):
 		system_monitor_separator.show()
 		
 		if self.preferences['display_cpu_average']:
-			self.menu_items['cpu'] = gtk.MenuItem()
+			self.menu_items['cpu'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['cpu'])
 			self.menu_items['cpu'].show()
 
@@ -121,7 +128,7 @@ class SysPeekIndicator(appindicator.Indicator):
 			cpu_count = self.suppliers['cpu'].get_cpu_count()
 			self.menu_items['cores'] = {}
 			for x in range(cpu_count / 2 + cpu_count % 2):
-				self.menu_items['cores'][x] = gtk.MenuItem()
+				self.menu_items['cores'][x] = gtk.MenuItem(self.LABEL_WAITING)
 				menu.append(self.menu_items['cores'][x])
 				self.menu_items['cores'][x].show()
 
@@ -131,12 +138,12 @@ class SysPeekIndicator(appindicator.Indicator):
 			self.menu_items['separator_cpu'].show()
 
 		if self.preferences['display_memory']:
-			self.menu_items['memory'] = gtk.MenuItem()
+			self.menu_items['memory'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['memory'])
 			self.menu_items['memory'].show()
 
 		if self.preferences['display_swap']:
-			self.menu_items['swap'] = gtk.MenuItem()
+			self.menu_items['swap'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['swap'])
 			self.menu_items['swap'].show()
 
@@ -148,7 +155,7 @@ class SysPeekIndicator(appindicator.Indicator):
 		if self.preferences['display_disk'] and len(self.preferences['disks']) > 0:
 			self.menu_items['disks'] = {}
 			for key in self.preferences['disks']:
-				self.menu_items['disks'][key] = gtk.MenuItem()
+				self.menu_items['disks'][key] = gtk.MenuItem(self.LABEL_WAITING)
 				menu.append(self.menu_items['disks'][key])
 				self.menu_items['disks'][key].show()
 
@@ -157,20 +164,20 @@ class SysPeekIndicator(appindicator.Indicator):
 			self.menu_items['separator_disk'].show()
 
 		if self.preferences['display_network_speed']:
-			self.menu_items['receiving'] = gtk.MenuItem()
+			self.menu_items['receiving'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['receiving'])
 			self.menu_items['receiving'].show()
 
-			self.menu_items['sending'] = gtk.MenuItem()
+			self.menu_items['sending'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['sending'])
 			self.menu_items['sending'].show()
 
 		if self.preferences['display_network_total']:
-			self.menu_items['received'] = gtk.MenuItem()
+			self.menu_items['received'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['received'])
 			self.menu_items['received'].show()
 
-			self.menu_items['sent'] = gtk.MenuItem()
+			self.menu_items['sent'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['sent'])
 			self.menu_items['sent'].show()
 
@@ -256,11 +263,13 @@ class SysPeekIndicator(appindicator.Indicator):
 		os.wait3(os.WNOHANG)
 
 	def preferences_dialog(self, widget):
-		builder = gtk.Builder()
-		builder.add_from_file(pkg_resources.resource_filename('syspeek.ui','PreferencesDialog.ui'))
-		preferences = builder.get_object('dialogPreferences')
-		preferences.set_title(DISPLAY_NAME + ' ' + _('Preferences'))
-		preferences.show()
+		preferences_dialog = PreferencesDialog(self)
+		preferences_dialog.update_widgets()
+		preferences_dialog.show()
+
+	def apply_preferences(self):
+		self.build_menu()
+		self.start_suppliers()
 
 	def about(self, widget):
 		self.aboutdialog = gtk.AboutDialog()
@@ -281,14 +290,82 @@ class SysPeekIndicator(appindicator.Indicator):
 	def quit(self, widget):
 		gtk.main_quit()
 
+class PreferencesDialog:
+	WIDGET_METHODS = {
+		'display_': '_active',
+		'update_interval_': '_value',
+	}
+
+	def __init__(self, indicator):
+		self.indicator = indicator
+		self.builder = gtk.Builder()
+		self.builder.add_from_file(pkg_resources.resource_filename('syspeek.ui','PreferencesDialog.ui'))
+		self.dialog = self.builder.get_object('preferences_dialog')
+		self.dialog.set_title(DISPLAY_NAME + ' ' + _('Preferences'))
+		self.builder.connect_signals({
+			'on_button_ok_clicked': self.ok,
+			'on_button_apply_clicked': self.apply,
+			'on_button_cancel_clicked': self.cancel,
+		})
+
+	def show(self):
+		self.dialog.show()
+
+	def ok(self, widget):
+		self.dialog.destroy()
+		self.update_preferences()
+		self.indicator.preferences.save()
+		gobject.idle_add(self.indicator.apply_preferences)
+
+	def apply(self, widget):
+		self.update_preferences()
+		self.indicator.preferences.save()
+		gobject.idle_add(self.indicator.apply_preferences)
+
+	def cancel(self, widget):
+		self.dialog.destroy()
+
+
+	def update_widgets(self):
+		for preferences_key in self.indicator.preferences.keys():
+			self.update_widget(preferences_key)
+
+	def update_preferences(self):
+		for preferences_key in self.indicator.preferences.keys():
+			self.update_preference(preferences_key)
+
+	def update_widget(self, preferences_key):
+		self._update(preferences_key, self._update_widget)
+
+	def update_preference(self, preferences_key):
+		self._update(preferences_key, self._update_preference)
+
+	def _update(self, preferences_key, update_method):
+		for widgets_key in self.WIDGET_METHODS:
+			if preferences_key.startswith(widgets_key):
+				widget = self.builder.get_object(preferences_key)
+				update_method(preferences_key, widget, self.WIDGET_METHODS[widgets_key])
+				return
+
+	def _update_widget(self, preferences_key, widget, widget_method):
+		if widget is not None:
+			method = getattr(widget, 'set' + widget_method)
+			method(self.indicator.preferences[preferences_key])
+
+	def _update_preference(self, preferences_key, widget, widget_method):
+		if widget is not None:
+			method = getattr(widget, 'get' + widget_method)
+			self.indicator.preferences[preferences_key] = method()
+	
+
 class Preferences(UserDict):
 	FILENAME = os.path.join(os.getenv('HOME'), '.' + NAME, 'preferences.json')
 	DEFAULT_PREFERENCES = {
 		'version': 1,
-		'refresh_rate_cpu': 1.0,
-		'refresh_rate_memswap': 2.0,
-		'refresh_rate_disk': 2.0,
-		'refresh_rate_network': 1.0,
+		'update_interval_cpu': 1.0,
+		'update_interval_memswap': 2.0,
+		'update_interval_disk': 5.0,
+		'update_interval_network': 1.0,
 		'display_cpu_average': True,
 		'display_cpu_cores': False,
 		'display_memory': True,
@@ -342,8 +419,9 @@ class Preferences(UserDict):
 			self.data['version'] = self.DEFAULT_PREFERENCES['version']
 
 		for key in self.data:
-			if ((type(self.data[key]) is not type(self.DEFAULT_PREFERENCES[key])) or 
-					(key.startswith('refresh_rate_') and self.data[key] <= 0.0)):
+			if (key in self.DEFAULT_PREFERENCES
+				 and ((type(self.data[key]) is not type(self.DEFAULT_PREFERENCES[key])) or 
+					(key.startswith('update_interval_') and self.data[key] <= 0.0))):
 				update = True
 				print "ERROR: Invalid value %s for key %s. Setting to default value %s" % \
 					(self.data[key], key, self.DEFAULT_PREFERENCES[key])
