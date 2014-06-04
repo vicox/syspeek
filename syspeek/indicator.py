@@ -115,6 +115,7 @@ class SysPeekIndicator():
 		system_monitor.connect('activate', self.system_monitor)
 		system_monitor.show()
 		menu.append(system_monitor)
+		self.indicator.set_secondary_activate_target(system_monitor)
 
 		system_monitor_separator = gtk.SeparatorMenuItem()
 		menu.append(system_monitor_separator)
