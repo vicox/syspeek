@@ -15,11 +15,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import gobject
 import os
 import threading
 import time
 import traceback
+from gi.repository import GObject as gobject
 from abc import ABCMeta, abstractmethod
 
 class Supplier(threading.Thread):

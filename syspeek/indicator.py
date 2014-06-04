@@ -15,11 +15,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import gtk
-import gobject
-import appindicator
+# import appindicator
 import os
 from gettext import gettext as _
+from gi.repository import AppIndicator3 as appindicator
+from gi.repository import Gtk as gtk
+from gi.repository import GObject as gobject
 from UserDict import UserDict
 import json
 import pkg_resources
@@ -28,7 +29,7 @@ from syspeek import *
 from syspeek.supplier import *
 from syspeek.helper import human_readable as _h
 
-class SysPeekIndicator(appindicator.Indicator):
+class SysPeekIndicator():
 	menu_items = {}
 	suppliers = {}
 	active_suppliers = []
@@ -47,8 +48,8 @@ class SysPeekIndicator(appindicator.Indicator):
 	LABEL_WAITING = _('Waiting for data') + '...'
 
 	def __init__(self):
-		appindicator.Indicator.__init__(self, NAME, NAME + '-0',
-			appindicator.CATEGORY_HARDWARE
+		self.indicator = appindicator.Indicator.new(NAME, NAME + '-0',
+			appindicator.IndicatorCategory.HARDWARE
 		)
 
 		# in case app is running from local folder
@@ -56,9 +57,9 @@ class SysPeekIndicator(appindicator.Indicator):
 			os.path.dirname(__file__), '../data/icons/22x22/status')
 		)
 		if os.path.exists(icon_path):
-			self.set_icon_theme_path(icon_path)
+			self.indicator.set_icon_theme_path(icon_path)
 
-		self.set_status((appindicator.STATUS_ACTIVE))
+		self.indicator.set_status((appindicator.IndicatorStatus.ACTIVE))
 
 		self.preferences = Preferences()
 		self.preferences.load()
@@ -84,7 +85,7 @@ class SysPeekIndicator(appindicator.Indicator):
 				self.suppliers['cpu'].start()
 		else:
 			self.suppliers['cpu'].stop()
-		
+
 		if self.preferences['display_memory'] or self.preferences['display_swap']:
 			self.suppliers['memswap'].interval = self.preferences['update_interval_memswap']
 			if not self.suppliers['memswap'].is_alive():
@@ -118,7 +119,7 @@ class SysPeekIndicator(appindicator.Indicator):
 		system_monitor_separator = gtk.SeparatorMenuItem()
 		menu.append(system_monitor_separator)
 		system_monitor_separator.show()
-		
+
 		if self.preferences['display_cpu_average']:
 			self.menu_items['cpu'] = gtk.MenuItem(self.LABEL_WAITING)
 			menu.append(self.menu_items['cpu'])
@@ -201,10 +202,10 @@ class SysPeekIndicator(appindicator.Indicator):
 		quit.show()
 		menu.append(quit)
 
-		self.set_menu(menu)
+		self.indicator.set_menu(menu)
 
 	def update_cpu(self, percentage):
-		self.set_icon(NAME + '-' + str(int(percentage / 10) * 10))
+		self.indicator.set_icon(NAME + '-' + str(int(percentage / 10) * 10))
 		if self.preferences['display_cpu_average']:
 			self.menu_items['cpu'].set_label(
 				self.LABEL_CPU.format(percentage)
@@ -356,7 +357,7 @@ class PreferencesDialog:
 		if widget is not None:
 			method = getattr(widget, 'get' + widget_method)
 			self.indicator.preferences[preferences_key] = method()
-	
+
 
 class Preferences(UserDict):
 	FILENAME = os.path.join(os.getenv('HOME'), '.' + NAME, 'preferences.json')
@@ -426,7 +427,7 @@ class Preferences(UserDict):
 				print "ERROR: Invalid value %s for key %s. Setting to default value %s" % \
 					(self.data[key], key, self.DEFAULT_PREFERENCES[key])
 				self.data[key] = self.DEFAULT_PREFERENCES[key]
-		
+
 		if update:
 			self.save()
 

@@ -17,13 +17,14 @@
 
 NAME = 'syspeek'
 DISPLAY_NAME = 'SysPeek'
-VERSION = '0.2'
+VERSION = '0.3'
 LICENSE = 'GPL-3'
 COPYRIGHT = 'Copyright (C) 2011 Georg Schmidl'
 WEBSITE = 'https://launchpad.net/syspeek'
 
 AUTHORS = [
 	'Georg Schmidl <georg.schmidl@vicox.net>',
+	'Marco Trevisan <mail@3v1n0.net>'
 ]
 
 LICENSE_TEXT = \
@@ -40,14 +41,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
-import gtk
+from gi.repository import Gtk, Gdk
 from syspeek.indicator import *
 
 def main():
-	gtk.gdk.threads_init()
-	gtk.gdk.threads_enter()
+	Gdk.threads_init()
+	Gdk.threads_enter()
 
 	syspeek = SysPeekIndicator()
+	Gtk.main()
 
-	gtk.main()
-	gtk.gdk.threads_leave()
+	Gdk.threads_leave()
