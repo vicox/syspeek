@@ -21,6 +21,7 @@ from gettext import gettext as _
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Gtk as gtk
 from gi.repository import GObject as gobject
+from gi.repository import GLib
 from UserDict import UserDict
 import json
 import pkg_resources
@@ -361,7 +362,7 @@ class PreferencesDialog:
 
 
 class Preferences(UserDict):
-	FILENAME = os.path.join(os.getenv('HOME'), '.' + NAME, 'preferences.json')
+	FILENAME = os.path.join(GLib.get_user_config_dir(), '.' + NAME, 'preferences.json')
 	DEFAULT_PREFERENCES = {
 		'version': 1,
 		'update_interval_cpu': 1.0,
