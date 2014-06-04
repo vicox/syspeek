@@ -276,8 +276,9 @@ class SysPeekIndicator():
 
 	def about(self, widget):
 		self.aboutdialog = gtk.AboutDialog()
-		self.aboutdialog.set_name(DISPLAY_NAME)
+		self.aboutdialog.set_program_name(DISPLAY_NAME)
 		self.aboutdialog.set_version(VERSION)
+		self.aboutdialog.set_comments(COMMENTS)
 		self.aboutdialog.set_copyright(COPYRIGHT)
 		self.aboutdialog.set_website(WEBSITE)
 		self.aboutdialog.set_authors(AUTHORS)

@@ -17,6 +17,7 @@
 
 NAME = 'syspeek'
 DISPLAY_NAME = 'SysPeek'
+COMMENTS = 'System Monitor Indicator'
 VERSION = '0.3'
 LICENSE = 'GPL-3'
 COPYRIGHT = 'Copyright (C) 2011 Georg Schmidl'
