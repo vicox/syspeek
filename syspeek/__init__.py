@@ -48,6 +48,10 @@ def main():
 	Gdk.threads_init()
 	Gdk.threads_enter()
 
+	# Workaround to python gtk bug (#622084) causing Ctrl+C not to work
+	import signal
+	signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 	syspeek = SysPeekIndicator()
 	Gtk.main()
 
