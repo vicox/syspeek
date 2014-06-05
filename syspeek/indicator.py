@@ -314,7 +314,7 @@ class PreferencesDialog:
 	def __init__(self, indicator):
 		self.indicator = indicator
 		self.builder = gtk.Builder()
-		self.builder.add_from_file(pkg_resources.resource_filename('syspeek.ui','PreferencesDialog.ui'))
+		self.builder.add_from_file(pkg_resources.resource_filename('syspeek','PreferencesDialog.ui'))
 		self.dialog = self.builder.get_object('preferences_dialog')
 		self.disks = self.builder.get_object('liststore_disks')
 		self.dialog.set_title(DISPLAY_NAME + ' ' + _('Preferences'))

@@ -21,15 +21,17 @@ import sys
 import shutil
 import DistUtilsExtra.auto
 
+NAME='syspeek'
+
 class Install(DistUtilsExtra.auto.install_auto):
 	def run(self):
-		shutil.copy(os.path.join('data', 'syspeek.desktop.in'), 'syspeek.desktop')
+		shutil.copy(os.path.join('data', NAME+'.desktop.in'), NAME+'.desktop')
 		DistUtilsExtra.auto.install_auto.run(self)
-		os.remove('syspeek.desktop')
+		os.remove(NAME+'.desktop')
 
 DistUtilsExtra.auto.setup(
-	name='syspeek',
-	version='0.2',
+	name=NAME,
+	version='0.3',
 	license='GPL-3',
 	author='Georg Schmidl',
 	author_email='georg.schmidl@vicox.net',
@@ -37,7 +39,8 @@ DistUtilsExtra.auto.setup(
 	long_description='SysPeek is a system monitor indicator that displays CPU usage, memory usage, swap usage, disk usage and network traffic.',
 	url='http://launchpad.net/syspeek',
 	data_files=[
-		('/etc/xdg/autostart', ['syspeek.desktop',]),
+		('/etc/xdg/autostart', [NAME+'.desktop',]),
 	],
+	package_data={NAME: ['ui/*.ui']},
 	cmdclass={'install': Install},
 )
