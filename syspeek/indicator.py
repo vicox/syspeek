@@ -273,8 +273,8 @@ class SysPeekIndicator():
 			try:
 				GLib.spawn_async([sysmonitor], flags=GLib.SpawnFlags.SEARCH_PATH)
 				break
-			except GLib.GError as e:
-				print('Impossible to start the system monitor: ' + e.message)
+			except:
+				traceback.print_exc()
 
 	def preferences_dialog(self, widget):
 		preferences_dialog = PreferencesDialog(self)
@@ -408,7 +408,7 @@ class Preferences(UserDict):
 			self.data = self.DEFAULT_PREFERENCES
 			self.save()
 
-			old_filename = os.path.join(GLib.get_user_config_dir(), '.' + NAME, 'preferences.json')
+			old_filename = os.path.join(GLib.get_user_config_dir(), '.' + NAME, os.basename(self.FILENAME))
 			if os.path.exists(old_filename):
 				os.rename(old_filename, self.FILENAME)
 				os.removedirs(os.path.dirname(old_filename))
