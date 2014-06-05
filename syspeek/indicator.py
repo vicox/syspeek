@@ -374,7 +374,8 @@ class PreferencesDialog:
 
 
 class Preferences(UserDict):
-	FILENAME = os.path.join(GLib.get_user_config_dir(), '.' + NAME, 'preferences.json')
+	FILENAME = os.path.join(GLib.get_user_config_dir(), NAME, 'preferences.json')
+
 	DEFAULT_PREFERENCES = {
 		'version': 1,
 		'update_interval_cpu': 1.0,
@@ -406,6 +407,13 @@ class Preferences(UserDict):
 		if not os.path.exists(self.FILENAME):
 			self.data = self.DEFAULT_PREFERENCES
 			self.save()
+
+			old_filename = os.path.join(GLib.get_user_config_dir(), '.' + NAME, 'preferences.json')
+			if os.path.exists(old_filename):
+				os.rename(old_filename, self.FILENAME)
+				os.removedirs(os.path.dirname(old_filename))
+				self.load()
+
 			return
 
 		try:
