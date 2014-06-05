@@ -262,8 +262,19 @@ class SysPeekIndicator():
 			)
 
 	def system_monitor(self, widget):
-		os.spawnlp(os.P_NOWAIT, 'gnome-system-monitor', 'gnome-system-monitor')
-		os.wait3(os.WNOHANG)
+		sysmonitors = ['gnome-system-monitor', 'ksysguard', 'htop']
+		desktop = os.environ['XDG_CURRENT_DESKTOP']
+
+		if desktop == 'KDE' or len(desktop) == 0:
+			sysmonitors.remove('ksysguard')
+			sysmonitors.insert(0, 'ksysguard')
+
+		for sysmonitor in sysmonitors:
+			try:
+				GLib.spawn_async([sysmonitor], flags=GLib.SpawnFlags.SEARCH_PATH)
+				break
+			except GLib.GError as e:
+				print('Impossible to start the system monitor: ' + e.message)
 
 	def preferences_dialog(self, widget):
 		preferences_dialog = PreferencesDialog(self)
