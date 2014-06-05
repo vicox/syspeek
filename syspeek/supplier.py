@@ -16,36 +16,64 @@
 #
 
 import os
-import threading
-import time
 import traceback
-from gi.repository import GObject as gobject
+from gi.repository import GLib
 from abc import ABCMeta, abstractmethod
 
-class Supplier(threading.Thread):
+class Supplier():
 	__metaclass__ = ABCMeta
 
 	def __init__(self, display, interval=1):
-		threading.Thread.__init__(self)
 		self.display = display
-		self.interval = interval
-		self._stop = threading.Event()
-		self.setDaemon(True)
+		self.__interval = interval
+		self.timeout = None
+
+	def __start_timeout(self):
+		self.stop()
+		interval = int(self.interval * 1000)
+
+		if interval % 1000 == 0:
+			interval = interval / 1000
+			self.timeout = GLib.timeout_source_new_seconds(interval)
+		else:
+			self.timeout = GLib.Timeout(interval)
+
+		self.timeout.set_callback(self.__on_callback)
+		self.timeout.attach()
+
+	def __on_callback(self, data):
+		try:
+			self.supply()
+		except:
+			traceback.print_exc()
+		return True
 
 	def run(self):
-		self.running = True
-		while not self.stopped():
-			try:
-				self.supply()
-			except:
-				traceback.print_exc()
-			time.sleep(self.interval)
+		if self.stopped():
+			self.__start_timeout()
+		self.supply()
 
 	def stop(self):
-		self._stop.set()
+		if self.timeout:
+			self.timeout.destroy()
+			self.timeout = None
 
 	def stopped(self):
-		return self._stop.isSet()
+		return self.timeout == None or self.timeout.is_destroyed()
+
+	@property
+	def interval(self):
+		return self.__interval;
+
+	@interval.setter
+	def interval(self, val):
+		if self.__interval == val:
+			return
+
+		self.__interval = val
+
+		if not self.stopped():
+			self.__start_timeout()
 
 	@abstractmethod
 	def supply(self): pass
@@ -109,10 +137,10 @@ class CpuSupplier(Supplier):
 				break
 
 		if self.supply_average:
-			gobject.idle_add(self.display.update_cpu, percentages[0])
+			self.display.update_cpu(percentages[0])
 
 		if self.supply_cores:
-			gobject.idle_add(self.display.update_cpu_cores, percentages[1:])
+			self.display.update_cpu_cores(percentages[1:])
 
 class MemSwapSupplier(Supplier):
 	def supply(self):
@@ -129,8 +157,8 @@ class MemSwapSupplier(Supplier):
 
 		mem_used = meminfo['MemTotal'] - meminfo['MemFree'] - meminfo['Buffers'] - meminfo['Cached']
 		swap_used = meminfo['SwapTotal'] - meminfo['SwapFree']
-		
-		gobject.idle_add(self.display.update_memswap,
+
+		self.display.update_memswap(
 			mem_used,
 			meminfo['MemTotal'],
 			swap_used,
@@ -166,7 +194,7 @@ class NetworkSupplier(Supplier):
 		delta_receive = receive - self.last_receive
 		delta_transmit = transmit - self.last_transmit
 
-		gobject.idle_add(self.display.update_network,
+		self.display.update_network(
 			int(delta_receive / self.interval),
 			int(delta_transmit / self.interval),
 			receive,
@@ -175,7 +203,6 @@ class NetworkSupplier(Supplier):
 
 		self.last_receive = receive
 		self.last_transmit = transmit
-					
 
 	def active_interface(self):
 		f = open('/proc/net/route', 'r')
@@ -203,5 +230,5 @@ class DiskSupplier(Supplier):
 			except:
 				print "ERROR: Could not get data for " + directory
 
-		gobject.idle_add(self.display.update_disk, values)
+		self.display.update_disk(values)
 

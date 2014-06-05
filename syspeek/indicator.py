@@ -82,30 +82,26 @@ class SysPeekIndicator():
 
 		if self.preferences['display_cpu_average'] or self.preferences['display_cpu_cores']:
 			self.suppliers['cpu'].interval = self.preferences['update_interval_cpu']
-			if not self.suppliers['cpu'].is_alive():
-				self.suppliers['cpu'].start()
+			self.suppliers['cpu'].run()
 		else:
 			self.suppliers['cpu'].stop()
 
 		if self.preferences['display_memory'] or self.preferences['display_swap']:
 			self.suppliers['memswap'].interval = self.preferences['update_interval_memswap']
-			if not self.suppliers['memswap'].is_alive():
-				self.suppliers['memswap'].start()
+			self.suppliers['memswap'].run()
 		else:
 			self.suppliers['memswap'].stop()
 
 		if self.preferences['display_disk'] and len(self.preferences['disks']) > 0:
 			self.suppliers['disk'].interval = self.preferences['update_interval_disk']
 			self.suppliers['disk'].directories = self.preferences['disks']
-			if not self.suppliers['disk'].is_alive():
-				self.suppliers['disk'].start()
+			self.suppliers['disk'].run()
 		else:
 			self.suppliers['disk'].stop()
 
 		if self.preferences['display_network_speed'] or self.preferences['display_network_total']:
 			self.suppliers['network'].interval = self.preferences['update_interval_network']
-			if not self.suppliers['network'].is_alive():
-				self.suppliers['network'].start()
+			self.suppliers['network'].run()
 		else:
 			self.suppliers['network'].stop()
 

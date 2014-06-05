@@ -42,18 +42,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
 from syspeek.indicator import *
 
 def main():
-	Gdk.threads_init()
-	Gdk.threads_enter()
-
 	# Workaround to python gtk bug (#622084) causing Ctrl+C not to work
 	import signal
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 	syspeek = SysPeekIndicator()
 	Gtk.main()
-
-	Gdk.threads_leave()
