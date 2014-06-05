@@ -228,7 +228,7 @@ class DiskSupplier(Supplier):
 					values[directory]['total'] - (stat.f_bsize * stat.f_bfree)
 				)
 			except:
-				print "ERROR: Could not get data for " + directory
+				print("ERROR: Could not get data for " + directory)
 
 		self.display.update_disk(values)
 

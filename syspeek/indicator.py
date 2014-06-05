@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 #    Copyright (C) 2011  Georg Schmidl <georg.schmidl@vicox.net>
@@ -23,9 +22,13 @@ from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Gtk as gtk
 from gi.repository import GObject as gobject
 from gi.repository import GLib
-from UserDict import UserDict
 import json
 import pkg_resources
+
+try:
+	from UserDict import UserDict
+except ImportError:
+	from collections import UserDict
 
 from syspeek import *
 from syspeek.supplier import *
@@ -481,7 +484,7 @@ class Preferences(UserDict):
 			self.data = json.loads(f.read())
 			f.close()
 		except:
-			print "ERROR: Could not read preferences file. Loading default values."
+			print("ERROR: Could not read preferences file. Loading default values.")
 			self.data = self.DEFAULT_PREFERENCES
 			self.save()
 			return
@@ -506,8 +509,8 @@ class Preferences(UserDict):
 				 and ((type(self.data[key]) is not type(self.DEFAULT_PREFERENCES[key])) or
 					(key.startswith('update_interval_') and self.data[key] <= 0.0))):
 				update = True
-				print "ERROR: Invalid value %s for key %s. Setting to default value %s" % \
-					(self.data[key], key, self.DEFAULT_PREFERENCES[key])
+				print("ERROR: Invalid value %s for key %s. Setting to default value %s" % \
+					(self.data[key], key, self.DEFAULT_PREFERENCES[key]))
 				self.data[key] = self.DEFAULT_PREFERENCES[key]
 
 		if update:
