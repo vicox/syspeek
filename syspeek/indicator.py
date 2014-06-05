@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 #    Copyright (C) 2011  Georg Schmidl <georg.schmidl@vicox.net>
 #
@@ -15,7 +17,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# import appindicator
 import os
 from gettext import gettext as _
 from gi.repository import AppIndicator3 as appindicator
@@ -46,7 +47,7 @@ class SysPeekIndicator():
 	LABEL_RECEIVED = _('Total Received') + ': {0}'
 	LABEL_SENT = _('Total Sent') + ': {0}'
 
-	LABEL_WAITING = _('Waiting for data') + '...'
+	LABEL_WAITING = _('Waiting for data') + '…'
 
 	def __init__(self):
 		self.indicator = appindicator.Indicator.new(NAME, NAME + '-0',
@@ -108,7 +109,7 @@ class SysPeekIndicator():
 	def build_menu(self):
 		menu = gtk.Menu()
 
-		system_monitor = gtk.MenuItem(_('System Monitor') + '...')
+		system_monitor = gtk.MenuItem(_('System Monitor') + '…')
 		system_monitor.connect('activate', self.system_monitor)
 		system_monitor.show()
 		menu.append(system_monitor)
@@ -312,6 +313,7 @@ class PreferencesDialog:
 		self.builder = gtk.Builder()
 		self.builder.add_from_file(pkg_resources.resource_filename('syspeek.ui','PreferencesDialog.ui'))
 		self.dialog = self.builder.get_object('preferences_dialog')
+		self.disks = self.builder.get_object('liststore_disks')
 		self.dialog.set_title(DISPLAY_NAME + ' ' + _('Preferences'))
 		self.builder.connect_signals({
 			'on_button_ok_clicked': self.ok,
@@ -336,14 +338,76 @@ class PreferencesDialog:
 	def cancel(self, widget):
 		self.dialog.destroy()
 
-
 	def update_widgets(self):
 		for preferences_key in self.indicator.preferences.keys():
 			self.update_widget(preferences_key)
 
+		self.update_disks_list()
+
+	def update_disks_list(self):
+		for path, name in self.indicator.preferences['disks'].items():
+			self.disks.append([name, path])
+
+		treeview_disks = self.builder.get_object('treeview_disks')
+		renderer = Gtk.CellRendererText()
+		renderer.set_property("editable", True)
+		renderer.connect("edited", self.on_disk_name_changed)
+
+		column = Gtk.TreeViewColumn(_('Name'), renderer, text=0)
+		column.set_clickable(False)
+		treeview_disks.append_column(column)
+
+		column = Gtk.TreeViewColumn(_('Path'), Gtk.CellRendererText(), text=1)
+		column.set_clickable(False)
+		treeview_disks.append_column(column)
+
+		add_button = self.builder.get_object("add_disk")
+		add_button.connect("clicked", self.on_add_disk_button_clicked)
+
+		rm_button = self.builder.get_object("rm_disk")
+		rm_button.connect("clicked", self.on_rm_disk_button_clicked)
+
+		self.builder.get_object('display_disk').set_active(len(self.disks) != 0)
+
+	def on_disk_name_changed(self, cell, widget_path, new_text):
+		iter = self.disks.get_iter(Gtk.TreePath.new_from_string(widget_path))
+		self.disks.set_value(iter, 0, new_text)
+
+	def on_add_disk_button_clicked(self, button):
+		file_chooser = Gtk.FileChooserDialog(_('Select Partition to Monitor'),
+			self.dialog,
+			Gtk.FileChooserAction.SELECT_FOLDER
+		)
+
+		file_chooser.add_button(_('_Cancel'), Gtk.ResponseType.CANCEL)
+		file_chooser.add_button(_('_Select'), Gtk.ResponseType.ACCEPT)
+		file_chooser.set_create_folders(False)
+		file_chooser.set_local_only(True)
+
+		if file_chooser.run() == Gtk.ResponseType.ACCEPT:
+			path = file_chooser.get_filename()
+			name = os.path.basename(path)
+			self.disks.append([name if len(name) else _('Root'), path])
+			self.builder.get_object('display_disk').set_active(len(self.disks) != 0)
+
+		file_chooser.destroy()
+
+	def on_rm_disk_button_clicked(self, button):
+		treeview_disks = self.builder.get_object('treeview_disks')
+		try:
+			(disks, item) = treeview_disks.get_selection().get_selected()
+			disks.remove(item)
+			self.builder.get_object('display_disk').set_active(len(disks) != 0)
+		except:
+			pass
+
 	def update_preferences(self):
 		for preferences_key in self.indicator.preferences.keys():
 			self.update_preference(preferences_key)
+
+		self.indicator.preferences['disks'] = {}
+		for name, path in self.disks:
+			self.indicator.preferences['disks'][path] = name
 
 	def update_widget(self, preferences_key):
 		self._update(preferences_key, self._update_widget)
@@ -386,7 +450,7 @@ class Preferences(UserDict):
 		'display_network_total': False,
 		'display_disk': True,
 		'disks': {
-			'/home': _('Disk'),
+			GLib.get_home_dir(): _('Disk'),
 		},
 	}
 
@@ -404,7 +468,7 @@ class Preferences(UserDict):
 			self.data = self.DEFAULT_PREFERENCES
 			self.save()
 
-			old_filename = os.path.join(GLib.get_user_config_dir(), '.' + NAME, os.basename(self.FILENAME))
+			old_filename = os.path.join(GLib.get_user_config_dir(), '.' + NAME, os.path.basename(self.FILENAME))
 			if os.path.exists(old_filename):
 				os.rename(old_filename, self.FILENAME)
 				os.removedirs(os.path.dirname(old_filename))
@@ -439,7 +503,7 @@ class Preferences(UserDict):
 
 		for key in self.data:
 			if (key in self.DEFAULT_PREFERENCES
-				 and ((type(self.data[key]) is not type(self.DEFAULT_PREFERENCES[key])) or 
+				 and ((type(self.data[key]) is not type(self.DEFAULT_PREFERENCES[key])) or
 					(key.startswith('update_interval_') and self.data[key] <= 0.0))):
 				update = True
 				print "ERROR: Invalid value %s for key %s. Setting to default value %s" % \
