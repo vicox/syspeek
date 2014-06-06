@@ -31,8 +31,9 @@ class Supplier():
 	def __start_timeout(self):
 		self.stop()
 		interval = int(self.interval * 1000)
+		glib240 = GLib.MAJOR_VERSION >= 2 and GLib.MINOR_VERSION >= 40
 
-		if interval % 1000 == 0:
+		if glib240 and interval % 1000 == 0:
 			interval = interval / 1000
 			self.timeout = GLib.timeout_source_new_seconds(interval)
 		else:
@@ -41,7 +42,7 @@ class Supplier():
 		self.timeout.set_callback(self.__on_callback)
 		self.timeout.attach()
 
-	def __on_callback(self, data):
+	def __on_callback(self, data = None):
 		try:
 			self.supply()
 		except:
