@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+%:
+		dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure
+	mkdir -p ubuntu-mono-dark/status/22
+	mkdir -p ubuntu-mono-light/status/22
+
+	cp data/icons/22x22/status/*.svg ubuntu-mono-dark/status/22
+	cp data/icons/22x22/status/*.svg ubuntu-mono-light/status/22
+
+	cd ubuntu-mono-light && bash -xe ../debian/ambiancetoradiance.sh

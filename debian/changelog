@@ -1,0 +1,72 @@
+syspeek (0.3+bzr26-1~webupd8~bionic) bionic; urgency=medium
+
+  * Upload for Bionic
+
+ -- Alin Andrei <andrew@webupd8.org>  Mon, 16 Jul 2018 12:58:42 +0200
+
+syspeek (0.3+bzr26-1~webupd8~zesty) zesty; urgency=medium
+
+  * Upload for Zesty
+
+ -- Alin Andrei <andrew@webupd8.org>  Mon, 20 Mar 2017 16:10:44 +0200
+
+syspeek (0.3+bzr26-1~webupd8~yakkety) yakkety; urgency=medium
+
+  * Upload for Yakkety
+
+ -- Alin Andrei <webupd8@gmail.com>  Mon, 17 Oct 2015 13:43:19 +0100
+
+syspeek (0.3+bzr26-1~webupd8~xenial1) xenial; urgency=medium
+
+  * Upload for Xenial
+  * Quickly switch from python-support (no longer available) to
+    dh_python
+
+ -- Alin Andrei <webupd8@gmail.com>  Wed, 11 Mar 2015 14:18:39 +0200
+
+syspeek (0.3+bzr26-1~webupd8~utopic0) utopic; urgency=medium
+
+  * Upload for Utopic
+
+ -- Alin Andrei <webupd8@gmail.com>  Thu, 11 Sep 2014 11:27:49 +0200
+
+syspeek (0.3+bzr26-1~webupd8~trusty0) trusty; urgency=medium
+
+  * Ported to GTK3 (by Marco Trevisan):
+    - https://code.launchpad.net/~3v1n0/syspeek/gtk3-port
+
+ -- Alin Andrei <webupd8@gmail.com>  Fri, 06 Jun 2014 13:48:51 +0200 
+
+syspeek (0.3~bzr12~webupd8~trusty3) trusty; urgency=medium
+
+  * Latest bzr code
+  * Removed partition chooser in Preferences > Disk, it doesn't work
+  * Work-aroud for not being able to enable/disable cpu/memory/disk/network more than 2 times per session
+  * Fixed settings can't be opened with file-not-found error (thanks to DA)
+  * Fixed Syspeek KDE sysmon (thanks to DA)
+
+ -- Alin Andrei <webupd8@gmail.com>  Fri, 25 Apr 2014 19:24:12 +0200 
+
+syspeek (0.2~bzr12~oneiric1) oneiric; urgency=low
+
+  * Oneiric build.
+
+ -- Georg Schmidl <georg.schmidl@vicox.net>  Sun, 23 Oct 2011 19:43:03 +0200 
+
+syspeek (0.2~natty2) natty; urgency=low
+
+  * Added ubuntu-mono-light icons.
+
+ -- Georg Schmidl <georg.schmidl@vicox.net>  Sat, 11 Jun 2011 17:41:38 +0200
+
+syspeek (0.2~natty1) natty; urgency=low
+
+  * New upstream release.
+
+ -- Georg Schmidl <georg.schmidl@vicox.net>  Thu, 09 Jun 2011 00:12:48 +0200
+
+syspeek (0.1~natty1) natty; urgency=low
+
+  * Initial release.
+
+ -- Georg Schmidl <georg.schmidl@vicox.net>  Tue, 07 Jun 2011 21:55:05 +0200

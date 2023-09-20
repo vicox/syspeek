@@ -1,0 +1,28 @@
+Source: syspeek
+Section: gnome
+Priority: extra
+Maintainer: Alin Andrei <webupd8@gmail.com>
+Build-Depends: debhelper (>= 7),
+	python-all-dev (>=2.7),
+	dh-python,
+	python-distutils-extra (>= 2.10)
+X-Python-Version: >= 2.7
+Standards-Version: 3.9.5
+Homepage: https://launchpad.net/syspeek
+
+Package: syspeek
+Architecture: all
+Depends: ${misc:Depends},
+	${python:Depends},
+	python-gobject | python-gi,
+	python-pkg-resources,
+	libappindicator3-1,
+	libgtk-3-0,
+	gir1.2-gtk-3.0,
+	gir1.2-glib-2.0,
+	gir1.2-appindicator3-0.1
+Recommends: gnome-system-monitor
+Description: A system monitor indicator.
+ SysPeek is a system monitor indicator that displays
+ CPU usage, memory usage, swap usage, disk usage 
+ and network traffic.
