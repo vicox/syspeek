@@ -45,6 +45,10 @@ class BuildDesktop(Command):
 
 build.sub_commands += [(x, lambda _: True) for x in ["build_desktop"]]
 
+def list_icons(size, section):
+	prefix = os.path.join('data', 'icons', f'{size}x{size}', section)
+	return [os.path.join(prefix, i) for i in os.listdir(prefix)]
+
 setup(
 	name=NAME,
 	version='0.3',
@@ -55,7 +59,9 @@ setup(
 	long_description='SysPeek is a system monitor indicator that displays CPU usage, memory usage, swap usage, disk usage and network traffic.',
 	url='http://launchpad.net/syspeek',
 	data_files=[
-		('/usr/bin', [os.path.join('bin', NAME)]),
+		('share/icons/hicolor/22x22/status', list_icons(22, 'status')),
+		('share/icons/hicolor/256x256/apps', list_icons(256, 'apps')),
+		('bin', [os.path.join('bin', NAME)]),
 		('/etc/xdg/autostart', [NAME+'.desktop',]),
 	],
 	packages=['syspeek'],
