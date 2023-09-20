@@ -5,20 +5,9 @@ export PYBUILD_NAME=syspeek
 %:
 		dh $@ --with python3 --buildsystem=pybuild
 
-override_dh_auto_configure:
-	dh_auto_configure
-	mkdir -p ubuntu-mono-dark/status/22
-	mkdir -p ubuntu-mono-light/status/22
-
-	cp data/icons/22x22/status/*.svg ubuntu-mono-dark/status/22
-	cp data/icons/22x22/status/*.svg ubuntu-mono-light/status/22
-
-	cd ubuntu-mono-light && bash -xe ../debian/ambiancetoradiance.sh
-
 override_dh_auto_clean:
 	dh_auto_clean
-	rm -rf ubuntu-mono-light \
-		ubuntu-mono-dark \
+	rm -rf \
 		syspeek.desktop \
 		syspeek.egg-info \
 		dist
