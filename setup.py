@@ -61,6 +61,7 @@ setup(
 	data_files=[
 		('share/icons/hicolor/22x22/status', list_icons(22, 'status')),
 		('share/icons/hicolor/256x256/apps', list_icons(256, 'apps')),
+		('share/applications', [NAME+'.desktop',]),
 		('bin', [os.path.join('bin', NAME)]),
 		('/etc/xdg/autostart', [NAME+'.desktop',]),
 	],
