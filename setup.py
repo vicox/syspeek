@@ -51,7 +51,7 @@ def list_icons(size, section):
 
 setup(
 	name=NAME,
-	version='0.3',
+	version='0.4',
 	license='GPL-3',
 	author='Georg Schmidl',
 	author_email='georg.schmidl@vicox.net',
