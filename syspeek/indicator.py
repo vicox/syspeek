@@ -59,7 +59,7 @@ class SysPeekIndicator():
 
 		# in case app is running from local folder
 		icon_path = os.path.abspath(os.path.join(
-			os.path.dirname(__file__), '../data/icons/22x22/status')
+			os.path.dirname(__file__), '../data/icons/scalable/status')
 		)
 		if os.path.exists(icon_path):
 			self.indicator.set_icon_theme_path(icon_path)
