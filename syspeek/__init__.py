@@ -21,7 +21,7 @@ COMMENTS = 'System Monitor Indicator'
 VERSION = '0.3'
 LICENSE = 'GPL-3'
 COPYRIGHT = 'Copyright (C) 2011 Georg Schmidl'
-WEBSITE = 'https://launchpad.net/syspeek'
+WEBSITE = 'https://github.com/vicox/syspeek'
 
 AUTHORS = [
 	'Georg Schmidl <georg.schmidl@vicox.net>',

@@ -1,6 +1,6 @@
 Format: http://dep.debian.net/deps/dep5
 Upstream-Name: syspeek
-Source: https://launchpad.net/syspeek
+Source: https://github.com/vicox/syspeek
 
 Files: *
 Copyright: 2011 Georg Schmidl <georg.schmidl@vivox.net>

@@ -57,7 +57,7 @@ setup(
 	author_email='georg.schmidl@vicox.net',
 	description='A system monitor indicator.',
 	long_description='SysPeek is a system monitor indicator that displays CPU usage, memory usage, swap usage, disk usage and network traffic.',
-	url='http://launchpad.net/syspeek',
+	url='https://github.com/vicox/syspeek',
 	data_files=[
 		('share/icons/hicolor/scalable/status', list_icons('scalable', 'status')),
 		('share/icons/hicolor/scalable/apps', list_icons('scalable', 'apps')),
