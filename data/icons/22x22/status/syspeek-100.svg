@@ -2,26 +2,25 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22"
-   height="22"
+   width="16"
+   height="16"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.1 r9760"
-   sodipodi:docname="syspeek-0.svg">
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="syspeek-100.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4">
     <linearGradient
        id="linearGradient3868"
-       osb:paint="solid">
+       inkscape:swatch="solid">
       <stop
          style="stop-color:#dfdbd2;stop-opacity:1;"
          offset="0"
@@ -29,7 +28,7 @@
     </linearGradient>
     <linearGradient
        id="linearGradient3858"
-       osb:paint="solid">
+       inkscape:swatch="solid">
       <stop
          style="stop-color:#dfdbd2;stop-opacity:1;"
          offset="0"
@@ -37,7 +36,7 @@
     </linearGradient>
     <linearGradient
        id="linearGradient3848"
-       osb:paint="solid">
+       inkscape:swatch="solid">
       <stop
          style="stop-color:#000000;stop-opacity:1;"
          offset="0"
@@ -45,7 +44,7 @@
     </linearGradient>
     <linearGradient
        id="linearGradient3842"
-       osb:paint="solid">
+       inkscape:swatch="solid">
       <stop
          style="stop-color:#dfdbd2;stop-opacity:1;"
          offset="0"
@@ -60,7 +59,7 @@
        x2="17.533463"
        y2="1042.3622"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.99490426,0,0,0.99490426,0.05605293,5.3115415)" />
+       gradientTransform="matrix(0.99490426,0,0,0.99490426,1.0560529,6.3115411)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -70,16 +69,19 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="41.554423"
-     inkscape:cx="10.999906"
-     inkscape:cy="10.4999"
+     inkscape:cx="7.0269295"
+     inkscape:cy="7.0870915"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
      showgrid="false"
-     inkscape:window-width="1542"
-     inkscape:window-height="876"
-     inkscape:window-x="58"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="1854"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -88,7 +90,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -96,52 +97,51 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1030.3622)"
+     transform="translate(-3.9998302,-1034.3622)"
      style="display:inline">
     <rect
-       style="opacity:0.29999999999999999;fill:none;stroke:url(#linearGradient3852);stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="opacity:0.3;fill:none;stroke:url(#linearGradient3852);stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect2993"
        width="13.00034"
        height="13.00034"
-       x="4.4998302"
-       y="1035.8621"
+       x="5.4998302"
+       y="1036.8621"
        ry="1.9829115" />
     <rect
-       style="opacity:0;fill-opacity:1;fill:#dfdbd2"
+       style="opacity:0;fill:#dfdbd2;fill-opacity:1"
        id="rect3856"
        width="10"
        height="10"
-       x="6"
-       y="1036.3622"
+       x="7"
+       y="1037.3622"
        ry="0" />
     <rect
-       style="fill-opacity:1;opacity:0.3"
+       style="opacity:0.3;fill-opacity:1"
        id="rect3864"
        width="10"
        height="1"
-       x="6"
-       y="1046.3622" />
+       x="7"
+       y="1047.3622" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Layer">
+     inkscape:label="Layer"
+     transform="translate(-3.9998302,-4.0000304)">
     <rect
-       transform="translate(0,-1030.3622)"
        ry="1.9829115"
-       y="1034.8621"
-       x="4.4998302"
+       y="5.4998603"
+       x="5.4998302"
        height="13.00034"
        width="13.00034"
        id="rect3840"
-       style="display:inline;fill:none;stroke:#df382c;stroke-width:0.99966036999999996;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="display:inline;fill:none;stroke:#df382c;stroke-width:0.99966;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <rect
-       y="1036.3622"
-       x="6"
+       y="6.9999824"
+       x="7"
        height="10"
        width="10"
        id="rect3866"
-       style="display:inline;fill:#df382c;fill-opacity:1"
-       transform="translate(0,-1030.3622)" />
+       style="display:inline;fill:#df382c;fill-opacity:1" />
   </g>
 </svg>
