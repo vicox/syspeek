@@ -1,3 +1,7 @@
+<div align="center">
+ <img src="data/icons/scalable/apps/syspeek.svg" height="300">
+</div>
+
 # SysPeek
 
 SysPeek is a system monitor indicator that displays CPU usage,memory usage,
