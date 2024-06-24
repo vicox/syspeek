@@ -207,7 +207,7 @@ class SysPeekIndicator():
 		self.indicator.set_menu(menu)
 
 	def update_cpu(self, percentage):
-		self.indicator.set_icon(NAME + '-' + str(int(percentage / 10) * 10))
+		self.indicator.set_icon(NAME + '-' + str(int(percentage / 10) * 10) + '-symbolic')
 		if self.preferences['display_cpu_average']:
 			self.menu_items['cpu'].set_label(
 				self.LABEL_CPU.format(percentage)
