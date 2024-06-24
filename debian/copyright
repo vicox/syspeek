@@ -3,11 +3,11 @@ Upstream-Name: syspeek
 Source: https://github.com/vicox/syspeek
 
 Files: *
-Copyright: 2011 Georg Schmidl <georg.schmidl@vivox.net>
+Copyright: 2011 Georg Schmidl <georg.schmidl@vicox.net>
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2011 Georg Schmidl <georg.schmidl@vivox.net>
+Copyright: 2011 Georg Schmidl <georg.schmidl@vicox.net>
 License: GPL-3.0+
 
 License: GPL-3.0+
