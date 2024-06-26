@@ -1,7 +1,7 @@
 Source: syspeek
 Section: gnome
 Priority: optional
-Maintainer: Marco Trevisan <marco@ubuntu.com>
+Maintainer: Georg Schmidl <georg.schmidl@vicox.net>
 Build-Depends: debhelper-compat (= 13),
   dh-python,
   python3,
@@ -10,7 +10,7 @@ Build-Depends: debhelper-compat (= 13),
   gir1.2-gtk-3.0 <!nocheck>,
   gir1.2-appindicator3-0.1 <!nocheck>,
 Standards-Version: 4.6.2
-Homepage: https://github.com/3v1n0/syspeek
+Homepage: https://github.com/vicox/syspeek
 
 Package: syspeek
 Architecture: all
