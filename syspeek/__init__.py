@@ -18,7 +18,7 @@
 NAME = 'syspeek'
 DISPLAY_NAME = 'SysPeek'
 COMMENTS = 'System Monitor Indicator'
-VERSION = '0.4'
+VERSION = '0.5.0'
 LICENSE = 'GPL-3'
 COPYRIGHT = 'Copyright (C) 2011 Georg Schmidl'
 WEBSITE = 'https://github.com/vicox/syspeek'
