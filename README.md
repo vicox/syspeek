@@ -91,8 +91,8 @@ You can download the latest version from the [release page](https://github.com/v
 
 Install dependencies:
 
-        sudo apt install python3-setuptools
+    sudo apt install python3-setuptools
 
 Run setup:
 
-        ./setup.py install
+    ./setup.py install
