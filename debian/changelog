@@ -1,3 +1,9 @@
+syspeek (0.5.1~noble1) noble; urgency=low
+
+  * New upstream release.
+
+ -- Georg Schmidl <georg.schmidl@vicox.net>  Sat, 29 Jun 2024 14:24:37 +0200
+
 syspeek (0.5.0~noble1) noble; urgency=low
 
   * New upstream release.
