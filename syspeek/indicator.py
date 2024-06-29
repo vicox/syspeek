@@ -130,7 +130,7 @@ class SysPeekIndicator():
 		if self.preferences['display_cpu_cores']:
 			cpu_count = self.suppliers['cpu'].get_cpu_count()
 			self.menu_items['cores'] = {}
-			for x in range(cpu_count / 2 + cpu_count % 2):
+			for x in range(cpu_count // 2 + cpu_count % 2):
 				self.menu_items['cores'][x] = gtk.MenuItem(self.LABEL_WAITING)
 				menu.append(self.menu_items['cores'][x])
 				self.menu_items['cores'][x].show()
@@ -215,7 +215,7 @@ class SysPeekIndicator():
 
 	def update_cpu_cores(self, percentages):
 		if self.preferences['display_cpu_cores']:
-			for x in range(len(percentages) / 2):
+			for x in range(len(percentages) // 2):
 				self.menu_items['cores'][x].set_label(
 					self.LABEL_CORES.format(x*2+1, percentages[x*2], x*2+2, percentages[x*2+1])
 				)
