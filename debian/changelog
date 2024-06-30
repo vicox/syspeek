@@ -67,7 +67,7 @@ syspeek (0.3~bzr12~webupd8~trusty3) trusty; urgency=medium
 
  -- Alin Andrei <webupd8@gmail.com>  Fri, 25 Apr 2014 19:24:12 +0200 
 
-syspeek (0.2~bzr12~oneiric1) oneiric; urgency=low
+syspeek (0.2~oneiric1) oneiric; urgency=low
 
   * Oneiric build.
 
@@ -90,3 +90,4 @@ syspeek (0.1~natty1) natty; urgency=low
   * Initial release.
 
  -- Georg Schmidl <georg.schmidl@vicox.net>  Tue, 07 Jun 2011 21:55:05 +0200
+ 
